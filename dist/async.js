@@ -217,10 +217,6 @@
             })
         }
 
-        Object.defineProperty(awaitable, 'name', {
-            value: `awaitable(${asyncFn.name})`
-        });
-
         return awaitable
     }
 
@@ -1556,7 +1552,7 @@
      * @param {number} [payload=Infinity] - An optional `integer` for determining
      * how many tasks should be processed per round; if omitted, the default is
      * unlimited.
-     * @returns {module:ControlFlow.CargoObject} A cargoQueue object to manage the tasks. Callbacks can
+     * @returns {module:ControlFlow.QueueObject} A cargoQueue object to manage the tasks. Callbacks can
      * attached as certain properties to listen for specific events during the
      * lifecycle of the cargoQueue and inner queue.
      * @example
@@ -2594,7 +2590,7 @@
      * The iteratee should complete with a `key` to group the value under.
      * Invoked with (value, callback).
      * @param {Function} [callback] - A callback which is called when all `iteratee`
-     * functions have finished, or an error occurs. Result is an `Object` whoses
+     * functions have finished, or an error occurs. Result is an `Object` whose
      * properties are arrays of values which returned the corresponding key.
      * @returns {Promise} a promise, if no callback is passed
      */
@@ -2651,7 +2647,7 @@
      * The iteratee should complete with a `key` to group the value under.
      * Invoked with (value, callback).
      * @param {Function} [callback] - A callback which is called when all `iteratee`
-     * functions have finished, or an error occurs. Result is an `Object` whoses
+     * functions have finished, or an error occurs. Result is an `Object` whose
      * properties are arrays of values which returned the corresponding key.
      * @returns {Promise} a promise, if no callback is passed
      * @example
@@ -2685,7 +2681,7 @@
      * The iteratee should complete with a `key` to group the value under.
      * Invoked with (value, callback).
      * @param {Function} [callback] - A callback which is called when all `iteratee`
-     * functions have finished, or an error occurs. Result is an `Object` whoses
+     * functions have finished, or an error occurs. Result is an `Object` whose
      * properties are arrays of values which returned the corresponding key.
      * @returns {Promise} a promise, if no callback is passed
      */
@@ -2945,7 +2941,7 @@
 
     var nextTick = wrap(_defer$1);
 
-    var _parallel = awaitify((eachfn, tasks, callback) => {
+    var parallel = awaitify((eachfn, tasks, callback) => {
         var results = isArrayLike(tasks) ? [] : {};
 
         eachfn(tasks, (task, key, taskCb) => {
@@ -3029,8 +3025,8 @@
      *     // results is now equals to: {one: 1, two: 2}
      * });
      */
-    function parallel(tasks, callback) {
-        return _parallel(eachOf$1, tasks, callback);
+    function parallel$1(tasks, callback) {
+        return parallel(eachOf$1, tasks, callback);
     }
 
     /**
@@ -3054,7 +3050,7 @@
      * @returns {Promise} a promise, if a callback is not passed
      */
     function parallelLimit(tasks, limit, callback) {
-        return _parallel(eachOfLimit(limit), tasks, callback);
+        return parallel(eachOfLimit(limit), tasks, callback);
     }
 
     /**
@@ -3085,7 +3081,7 @@
      * Invoke with `queue.unshift(task, [callback])`.
      * @property {AsyncFunction} pushAsync - the same as `q.push`, except this returns
      * a promise that rejects if an error occurs.
-     * @property {AsyncFunction} unshirtAsync - the same as `q.unshift`, except this returns
+     * @property {AsyncFunction} unshiftAsync - the same as `q.unshift`, except this returns
      * a promise that rejects if an error occurs.
      * @property {Function} remove - remove items from the queue that match a test
      * function.  The test function will be passed an object with a `data` property,
@@ -3124,7 +3120,7 @@
      * should be pushed to the queue after calling this function. Invoke with `queue.kill()`.
      *
      * @example
-     * const q = aync.queue(worker, 2)
+     * const q = async.queue(worker, 2)
      * q.push(item1)
      * q.push(item2)
      * q.push(item3)
@@ -3958,7 +3954,7 @@
      * });
      */
     function series(tasks, callback) {
-        return _parallel(eachOfSeries$1, tasks, callback);
+        return parallel(eachOfSeries$1, tasks, callback);
     }
 
     /**
@@ -4432,7 +4428,7 @@
      *
      * var count = 0;
      * async.whilst(
-     *     function test(cb) { cb(null, count < 5;) },
+     *     function test(cb) { cb(null, count < 5); },
      *     function iter(callback) {
      *         count++;
      *         setTimeout(function() {
@@ -4493,13 +4489,15 @@
      *
      * @example
      * const results = []
+     * let finished = false
      * async.until(function test(page, cb) {
-     *     cb(null, page.next == null)
+     *     cb(null, finished)
      * }, function iter(next) {
      *     fetchPage(url, (err, body) => {
      *         if (err) return next(err)
      *         results = results.concat(body.objects)
-     *         next(err, body)
+     *         finished = !!body.next
+     *         next(err)
      *     })
      * }, function done (err) {
      *     // all pages have been fetched
@@ -4676,7 +4674,7 @@
         mapValuesSeries,
         memoize,
         nextTick,
-        parallel,
+        parallel: parallel$1,
         parallelLimit,
         priorityQueue,
         queue: queue$1,
@@ -4784,7 +4782,7 @@
     exports.mapValuesSeries = mapValuesSeries;
     exports.memoize = memoize;
     exports.nextTick = nextTick;
-    exports.parallel = parallel;
+    exports.parallel = parallel$1;
     exports.parallelLimit = parallelLimit;
     exports.priorityQueue = priorityQueue;
     exports.queue = queue$1;

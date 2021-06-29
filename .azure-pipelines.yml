@@ -2,45 +2,41 @@ jobs:
 
 - job: Windows
   pool:
-    vmImage: vs2017-win2016
+    vmImage: windows-latest
 
   variables:
     os_name: Windows
 
   strategy:
     matrix:
-      node_8_x:
-        node_version: 8.x
-      node_10_x:
-        node_version: 10.x
-        # run_browser_tests: true
-        # browser_name: Edge
-        run_coveralls: true
       node_12_x:
         node_version: 12.x
+        # run_browser_tests: true
+        # browser_name: Edge
+        # run_coveralls: true
 
   steps:
   - template: .azure-pipelines-steps.yml
 
 - job: Linux
   pool:
-    vmImage: 'Ubuntu 16.04'
+    vmImage: 'ubuntu-latest'
 
   variables:
     os_name: Linux
 
   strategy:
     matrix:
-      node_8_x:
-        node_version: 8.x
       node_10_x:
         node_version: 10.x
+      node_12_x:
+        node_version: 12.x
+      node_14_x:
+        node_version: 14.x
         DISPLAY: :99.0
         run_browser_tests: true
         browser_name: Firefox
         run_coveralls: true
-      node_12_x:
-        node_version: 12.x
 
   steps:
   - script: |
@@ -51,23 +47,20 @@ jobs:
 
   - template: .azure-pipelines-steps.yml
 
-- job: OSX
-  pool:
-    vmImage: 'macOS 10.13'
-
-  variables:
-    os_name: OSX
-
-  strategy:
-    matrix:
-      node_8_x:
-        node_version: 8.x
-      node_10_x:
-        node_version: 10.x
-        run_browser_tests: true
-        browser_name: Safari
-      node_12_x:
-        node_version: 12.x
-
-  steps:
-  - template: .azure-pipelines-steps.yml
+#- job: OSX
+#  pool:
+#    vmImage: 'macOS-latest'
+#
+#  variables:
+#    os_name: OSX
+#
+#  strategy:
+#    matrix:
+#      node_14_x:
+#        node_version: 14.x
+#        run_browser_tests: true
+#        browser_name: Safari
+#
+#  steps:
+#  - template: .azure-pipelines-steps.yml
+#
